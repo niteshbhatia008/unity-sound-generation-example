@@ -7,6 +7,8 @@ public class AudioController : MonoBehaviour {
     public AudioSource audioSource;
     public GameObject bigSphere;
     public GameObject miniSphere;
+    public AudioLowPassFilter lowPassFilter;
+    public AudioHighPassFilter highPassFilter;
     public Material miniSphereMat;
 
     public Color colorStart = Color.red;
@@ -26,8 +28,12 @@ public class AudioController : MonoBehaviour {
 
         distance = Vector2.Distance(bigSphere.transform.position, miniSphere.transform.position);
         
-        avgD = (maxD - distance) / maxD;
-        audioSource.pitch = avgD;
+        //avgD = (maxD - distance) / maxD;
+        //audioSource.pitch = avgD;
+
+        avgD = Mathf.Clamp01((maxD - distance) / maxD);
+        lowPassFilter.cutoffFrequency = (float)(Mathf.Pow(2, (avgD * 3) + 8));
+        highPassFilter.cutoffFrequency = (float)(Mathf.Pow(2, (avgD * 3) + 8) * 1.3);
 
 
     }
@@ -45,10 +51,13 @@ public class AudioController : MonoBehaviour {
             distance = 5 - distance;
         }
 
+        avgD = Mathf.Clamp01((maxD - distance) / maxD);
+        lowPassFilter.cutoffFrequency = (float)(Mathf.Pow(2, (avgD * 3) + 8));
+        highPassFilter.cutoffFrequency = (float)(Mathf.Pow(2, (avgD * 3) + 8) * 1.3);
 
 
-        avgD = (maxD - distance) / maxD;
-        audioSource.pitch = avgD;
+        //avgD = (maxD - distance) / maxD;
+        //audioSource.pitch = avgD;
         miniSphereMat.color = Color.Lerp(colorStart, colorEnd, avgD);
 
 
